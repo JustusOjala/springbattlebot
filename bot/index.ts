@@ -357,7 +357,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
       const user = await getUser(user_id);
 
       const message_base =
-        "Hello there, welcome to the KIK-SIK Spring Battle!\n\nTo record kilometers for your guild send me a picture of your achievement, this can be for example a screenshot of your daily steps or a Strava log showing the exercise amount and route. After this I'll ask a few questions recarding the exercise.\n\n You can check how many kilometers you have contributed with /personal. Additionally you can check the current status of the battle with /status, this command also works in the group chat! \n\nIf you have any questions about the battle you can ask in the main group and the organizers will answer you! If some technical problems appear with me, you can contact @Ojakoo.";
+        "Hello there, welcome to the KIK-SIK Spring Battle!\n\nTo record kilometers for your guild send me a picture of your achievement, this can be for example a screenshot of your daily steps or a Strava log showing the exercise amount and route. After this I'll ask a few questions recarding the exercise.\n\n You can check how many kilometers you have contributed with /personal. Additionally you can check the current status of the battle with /status, this command also works in the group chat! \n\nIf you have any questions about the battle you can ask in the main group and the organizers will answer you! If some technical problems appear with me, you can contact @JustusOjala.";
 
       if (user[0] && user[0].guild) {
         ctx.reply(
@@ -504,7 +504,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
           if (e instanceof postgres.PostgresError) {
             console.log(e);
             ctx.reply(
-              "Encountered an error with logging data please contact @Ojakoo"
+              "Encountered an error with logging data please contact @JustusOjala"
             );
           }
 
