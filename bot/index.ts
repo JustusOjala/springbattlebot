@@ -134,6 +134,42 @@ async function getMyStats(user_id: number) {
   });
 }
 
+async function getMyDaily(user_id: number, ) {
+  const today = new Date(new Date().setHours(new Date().getHours() + 3));
+
+  const start_date = new Date(
+    new Date(new Date().setDate(today.getDate())).toDateString()
+  );
+  const limit_date = new Date(
+    new Date(
+      new Date().setDate(today.getDate() + 1)
+    ).toDateString()
+  );
+
+  const stats = await db
+    .select({
+      sport: logs.sport,
+      sum: sql`sum(${logs.distance})`.mapWith(Number),
+    })
+    .from(logs)
+    .where(
+      and(
+        eq(logs.userId, user_id),
+        between(logs.createdAt, start_date, limit_date)
+      )
+    )
+    .groupBy(logs.sport);
+
+  return Object.values(Sport).map((sport) => {
+    const sik = stats.find((s) => s.sport === sport) || {
+      sport,
+      sum: 0,
+    };
+
+    return { sport, sum: sik.sum.toFixed(1) };
+  });
+}
+
 async function getTop(
   guild: Guild,
   limit: number,
@@ -357,7 +393,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
       const user = await getUser(user_id);
 
       const message_base =
-        "Hello there, welcome to the KIK-SIK Spring Battle!\n\nTo record kilometers for your guild send me a picture of your achievement, this can be for example a screenshot of your daily steps or a Strava log showing the exercise amount and route. After this I'll ask a few questions recarding the exercise.\n\n You can check how many kilometers you have contributed with /personal. Additionally you can check the current status of the battle with /status, this command also works in the group chat! \n\nIf you have any questions about the battle you can ask in the main group and the organizers will answer you! If some technical problems appear with me, you can contact @Ojakoo.";
+        "Hello there, welcome to the KIK-SIK Spring Battle!\n\nTo record kilometers for your guild send me a picture of your achievement, this can be for example a screenshot of your daily steps or a Strava log showing the exercise amount and route. After this I'll ask a few questions recarding the exercise.\n\n You can check how many kilometers you have contributed with /personal. Additionally you can check the current status of the battle with /status, this command also works in the group chat! \n\nIf you have any questions about the battle you can ask in the main group and the organizers will answer you! If some technical problems appear with me, you can contact @JustusOjala.";
 
       if (user[0] && user[0].guild) {
         ctx.reply(
@@ -422,10 +458,10 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
       }
 
       kik_stats += ` - ${s.sport}: ${s.kik_sum.toFixed(1)} km${
-        s.kik_sum > s.sik_sum ? " 🏆" : ""
+        s.kik_sum > s.sik_sum ? " 🏆" : ` (-${(s.kik_sum - s.sik_sum).toFixed(1)} km)`
       }\n`;
       sik_stats += ` - ${s.sport}: ${s.sik_sum.toFixed(1)} km${
-        s.kik_sum < s.sik_sum ? " 🏆" : ""
+        s.kik_sum < s.sik_sum ? " 🏆" : ` (-${(s.sik_sum - s.kik_sum).toFixed(1)} km)`
       }\n`;
     });
 
@@ -467,6 +503,20 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
     }
   });
 
+  bot.command("mydaily", async (ctx: Context) => {
+    if (ctx.message && ctx.message.chat.type == "private") {
+      const user_id = Number(ctx.message.from.id);
+
+      const my_stats = await getMyDaily(user_id);
+
+      let message = "Your personal stats for today are:\n\n";
+
+      my_stats.forEach((s) => (message += `${s.sport}: ${s.sum}km\n`));
+
+      ctx.reply(message);
+    }
+  });
+
   bot.command("cancel", (ctx: Context) => {
     if (ctx.has(message("text"))) {
       const user_id = Number(ctx.message.from.id);
@@ -491,7 +541,18 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
 
           const distance = z.number().min(1).parse(Number(text));
 
-          await insertLog(
+          if(log_event.sport !== Sport.activity && distance > 1000){
+            ctx.reply(
+              "You inserted a distance exceeding 1000 km. Are you sure you did not intend to record steps?",
+              Markup.inlineKeyboard([
+                Markup.button.callback(
+                  `Record as ${log_event.sport}`,
+                  `sportFix ${log_event.sport} ${distance}`
+                ),
+                Markup.button.callback(`Record as ${Sport.activity}`, `sportFix ${Sport.activity} ${distance}`),
+              ])
+            );
+          }else await insertLog(
             log_event.user_id,
             log_event.sport as Sport,
             log_event.sport === Sport.activity ? distance * 0.0007 : distance
@@ -504,7 +565,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
           if (e instanceof postgres.PostgresError) {
             console.log(e);
             ctx.reply(
-              "Encountered an error with logging data please contact @Ojakoo"
+              "Encountered an error with logging data please contact @JustusOjala"
             );
           }
 
@@ -587,6 +648,16 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
             logData === Sport.activity
               ? "Type the number of steps that you have walked. These are converted to kilometers automatically"
               : "Type the number of kilometers using '.' as a separator, for example: 5.5"
+          );
+          break;
+        case "sportFix":
+          const distance = z.number().min(1).parse(Number(dataSplit[2]));
+          const sport = logData as Sport;
+  
+          await insertLog(
+            user_id,
+            sport,
+            sport === Sport.activity ? distance * 0.0007 : distance
           );
           break;
         case "daily":
