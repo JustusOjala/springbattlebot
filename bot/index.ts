@@ -336,6 +336,28 @@ async function getDailyMessage(day_modifier: number = 0) {
     )} km\n`;
   }
 
+  // Get all-time top and format
+
+  const kikTop = await getTop("KIK", 3)
+
+  const sikTop = await getTop("SIK", 3)
+
+  message += `\nKIK all-time top 3\n`;
+
+  for (const [index, user] of kikTop.entries()) {
+    message += `  ${index + 1}. ${user.userName}: ${user.totalDistance.toFixed(
+      1
+    )} km\n`;
+  }
+
+  message += `\nSIK all-time top 3\n`;
+
+  for (const [index, user] of sikTop.entries()) {
+    message += `  ${index + 1}. ${user.userName}: ${user.totalDistance.toFixed(
+      1
+    )} km\n`;
+  }
+
   return message;
 }
 
