@@ -429,6 +429,8 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
           Markup.button.callback("Yesterday", "daily -1"),
         ])
       );
+    }else if(ctx.message){
+      ctx.reply(`I'm sorry, ${ctx.message.from.id}. I'm afraid I can't do that.`)
     }
   });
 
