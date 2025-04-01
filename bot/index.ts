@@ -632,29 +632,39 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
               case "running/walking":
               case "r":
               case "w":
-                await insertLog(
-                  user_id,
-                  Sport.running_walking,
-                  distance
-                );
-    
-                ctx.reply(`Recorded ${Sport.running_walking} with ${distance} km`);
-                await deleteLogEvent(user_id);
-                ctx.reply("Thanks for participating!");
+                if(distance > 1000){
+                  ctx.reply("I parsed that as Running/Walking with more than 1000 km. That's probably wrong.");
+                  askSport(ctx);
+                }else{
+                  await insertLog(
+                    user_id,
+                    Sport.running_walking,
+                    distance
+                  );
+      
+                  ctx.reply(`Recorded Running/Walking with ${distance} km`);
+                  await deleteLogEvent(user_id);
+                  ctx.reply("Thanks for participating!");
+                }
                 break;
               case "biking":
               case "cycling":
               case "b":
               case "c":
-                await insertLog(
-                  user_id,
-                  Sport.biking,
-                  distance
-                );
-    
-                ctx.reply(`Recorded ${Sport.biking} with ${distance} km`);
-                await deleteLogEvent(user_id);
-                ctx.reply("Thanks for participating!");
+                if(distance > 1000){
+                  ctx.reply("I parsed that as Biking with more than 1000 km. That's probably wrong.");
+                  askSport(ctx);
+                }else{
+                  await insertLog(
+                    user_id,
+                    Sport.biking,
+                    distance
+                  );
+      
+                  ctx.reply(`Recorded Biking with ${distance} km`);
+                  await deleteLogEvent(user_id);
+                  ctx.reply("Thanks for participating!");
+                }
                 break;
               case "activity":
               case "a":
@@ -664,7 +674,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
                   distance * 0.0007
                 );
     
-                ctx.reply(`Recorded ${Sport.activity} with ${distance} steps`);
+                ctx.reply(`Recorded Activity with ${distance} steps`);
                 await deleteLogEvent(user_id);
                 ctx.reply("Thanks for participating!");
                 break;
