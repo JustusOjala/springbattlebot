@@ -452,13 +452,15 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
         ])
       );
     }else if(ctx.message){
-      ctx.reply(`I'm sorry, ${ctx.message.from.id}. I'm afraid I can't do that.`)
+      ctx.reply(`I'm sorry, ${ctx.message.from.first_name}. I'm afraid I can't do that.`)
     }
   });
 
   bot.command("all", async (ctx: Context) => {
     if (ctx.message && admins.list.includes(ctx.message.from.id)) {
       await handleAll(ctx);
+    }else if(ctx.message){
+      ctx.reply(`I'm sorry, ${ctx.message.from.first_name}. I'm afraid I can't do that.`)
     }
   });
 
