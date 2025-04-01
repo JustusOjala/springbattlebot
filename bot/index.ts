@@ -619,8 +619,66 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
 
         // TODO: upload photo somwhere and set reference,
         // alternatively can we fetch photos from some chat?
+        
+        if(ctx.has(message("photo")) && ctx.message.caption){ 
+          const parts = ctx.message.caption.split(',').map((x) => x.trim().toLowerCase())
+        
+          if(parts.length == 2 && Number(parts[1])){
+            const distance = z.number().min(1).parse(Number(parts[1]));
 
-        askSport(ctx);
+            switch(parts[0]){
+              case "walking":
+              case "running":
+              case "running/walking":
+              case "r":
+              case "w":
+                await insertLog(
+                  user_id,
+                  Sport.running_walking,
+                  distance
+                );
+    
+                ctx.reply(`Recorded ${Sport.running_walking} with ${distance} km`);
+                await deleteLogEvent(user_id);
+                ctx.reply("Thanks for participating!");
+                break;
+              case "biking":
+              case "cycling":
+              case "b":
+              case "c":
+                await insertLog(
+                  user_id,
+                  Sport.biking,
+                  distance
+                );
+    
+                ctx.reply(`Recorded ${Sport.biking} with ${distance} km`);
+                await deleteLogEvent(user_id);
+                ctx.reply("Thanks for participating!");
+                break;
+              case "activity":
+              case "a":
+                await insertLog(
+                  user_id,
+                  Sport.activity,
+                  distance * 0.0007
+                );
+    
+                ctx.reply(`Recorded ${Sport.activity} with ${distance} steps`);
+                await deleteLogEvent(user_id);
+                ctx.reply("Thanks for participating!");
+                break;
+              default:
+                await ctx.reply("Seems you tried to include sport information with the photo, but I could not parse it. Sorry.");
+                askSport(ctx);
+                break;
+            }
+          }else{
+            askSport(ctx);
+          }
+        }else{
+          askSport(ctx);
+        }
       } else {
         console.log(`User id: ${user_id}. User: ${user}`);
         ctx.reply("Please register with /start before recording kilometers.");
