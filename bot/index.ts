@@ -576,11 +576,15 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
                 Markup.button.callback(`Record as ${Sport.activity}`, `sportFix ${Sport.activity} ${distance}`),
               ])
             );
-          }else await insertLog(
-            log_event.user_id,
-            log_event.sport as Sport,
-            log_event.sport === Sport.activity ? distance * 0.0007 : distance
-          );
+          }else{
+            await insertLog(
+              log_event.user_id,
+              log_event.sport as Sport,
+              log_event.sport === Sport.activity ? distance * 0.0007 : distance
+            );
+
+            ctx.reply(`Recorded ${log_event.sport} with ${distance} ${log_event.sport === Sport.activity ? "steps" : "km"}`);
+          }
 
           await deleteLogEvent(log_event.user_id);
 
@@ -683,6 +687,8 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
             sport,
             sport === Sport.activity ? distance * 0.0007 : distance
           );
+
+          ctx.reply(`Recorded ${sport} with ${distance} ${sport === Sport.activity ? "steps" : "km"}`);
           break;
         case "daily":
           await handleDaily(ctx, Number(logData));
