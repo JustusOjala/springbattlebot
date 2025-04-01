@@ -633,7 +633,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
               case "r":
               case "w":
                 if(distance > 1000){
-                  ctx.reply("I parsed that as Running/Walking with more than 1000 km. That's probably wrong.");
+                  await ctx.reply("I parsed that as Running/Walking with more than 1000 km. That's probably wrong.");
                   askSport(ctx);
                 }else{
                   await insertLog(
@@ -652,7 +652,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
               case "b":
               case "c":
                 if(distance > 1000){
-                  ctx.reply("I parsed that as Biking with more than 1000 km. That's probably wrong.");
+                  await ctx.reply("I parsed that as Biking with more than 1000 km. That's probably wrong.");
                   askSport(ctx);
                 }else{
                   await insertLog(
