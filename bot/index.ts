@@ -106,6 +106,13 @@ async function getUser(user_id: number) {
   return user;
 }
 
+async function getGuildUsers(guild: string) {
+  const users =
+    await sql_pg`SELECT id, user_name FROM users WHERE guild = ${guild}`;
+
+  return users;
+}
+
 async function getDistanceBySport() {
   return await sql_pg<SportStatReturn[]>`
       SELECT guild, sport, SUM(distance) AS distance, COUNT(distance)::int AS entries
@@ -370,8 +377,11 @@ async function handleDaily(ctx: Context, day_modifier: number = 0) {
 async function handleAll(ctx: Context) {
   const sports = await getDistanceBySport();
 
+  const sik_users = await getGuildUsers("SIK");
+  const kik_users = await getGuildUsers("KIK");
+
   // TODO: rename messages to text or replyText due to telegraf message filter method
-  let message = "";
+  let message = `SIK participants: ${sik_users.length}\nKIK participants: ${kik_users.length}\n\n`;
 
   ["SIK", "KIK"].forEach((guild) =>
     Object.values(Sport).map((sport) => {
