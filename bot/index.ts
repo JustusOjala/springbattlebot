@@ -512,7 +512,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
 
       ctx.reply(message + kik_stats + "\n" + sik_stats);
     }else{
-      ctx.reply("I'm sorry, /status only works in private now")
+      ctx.reply("I'm sorry, \"status\" only works in private now")
     }
   });
 
