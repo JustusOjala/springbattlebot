@@ -425,7 +425,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
       const user = await getUser(user_id);
 
       const message_base =
-        "Hello there, welcome to the KIK-SIK Spring Battle!\n\nTo record kilometers for your guild send me a picture of your achievement, this can be for example a screenshot of your daily steps or a Strava log showing the exercise amount and route. After this I'll ask a few questions recarding the exercise.\n\nYou can also give the photo a caption in the format \"SPORT, DISTANCE\", and I will try to get the information from that. For Running/Walking either one is sufficient, and for Biking \"Cycling\" is also accepted. Just the first letter is also accepted. Letter case does not matter.\nFor example: \"running, 5.5\"\n\n You can check how many kilometers you have contributed with /personal. Additionally you can check the current status of the battle with /status, this command also works in the group chat! \n\nIf you have any questions about the battle you can ask in the main group and the organizers will answer you! If some technical problems appear with me, you can contact @JustusOjala.";
+        "Hello there, welcome to the KIK-SIK Spring Battle!\n\nTo record kilometers for your guild send me a picture of your achievement, this can be for example a screenshot of your daily steps or a Strava log showing the exercise amount and route. After this I'll ask a few questions recarding the exercise.\n\nYou can also give the photo a caption in the format \"SPORT, DISTANCE\", and I will try to get the information from that. For Running/Walking either one is sufficient, and for Biking \"Cycling\" is also accepted. Just the first letter is also accepted. Letter case does not matter.\nFor example: \"running, 5.5\"\n\n You can check how many kilometers you have contributed with /personal. Additionally you can check the current status of the battle with /status. \n\nIf you have any questions about the battle you can ask in the main group and the organizers will answer you! If some technical problems appear with me, you can contact @JustusOjala.";
 
       if (user[0] && user[0].guild) {
         ctx.reply(
@@ -476,40 +476,44 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
 
   // group commands
   bot.command("status", async (ctx: Context) => {
-    const stats = await getStats();
+    if(ctx.message && ctx.message.chat.type == "private"){
+      const stats = await getStats();
 
-    let sik_wins = 0;
-    let kik_wins = 0;
+      let sik_wins = 0;
+      let kik_wins = 0;
 
-    let message = "";
+      let message = "";
 
-    let kik_stats = "KIK:\n";
-    let sik_stats = "SIK:\n";
+      let kik_stats = "KIK:\n";
+      let sik_stats = "SIK:\n";
 
-    stats.forEach((s) => {
-      if (s.kik_sum > s.sik_sum) {
-        kik_wins += 1;
-      } else if (s.kik_sum < s.sik_sum) {
-        sik_wins += 1;
+      stats.forEach((s) => {
+        if (s.kik_sum > s.sik_sum) {
+          kik_wins += 1;
+        } else if (s.kik_sum < s.sik_sum) {
+          sik_wins += 1;
+        }
+
+        kik_stats += ` - ${s.sport}: ${s.kik_sum.toFixed(1)} km${
+          s.kik_sum > s.sik_sum ? " 🏆" : ` (-${(s.sik_sum - s.kik_sum).toFixed(1)} km)`
+        }\n`;
+        sik_stats += ` - ${s.sport}: ${s.sik_sum.toFixed(1)} km${
+          s.sik_sum > s.kik_sum ? " 🏆" : ` (-${(s.kik_sum - s.sik_sum).toFixed(1)} km)`
+        }\n`;
+      });
+
+      if (kik_wins < sik_wins) {
+        message += `JAPPADAIDA! Sik has the lead by winning ${sik_wins} categories.\n\n`;
+      } else if (kik_wins > sik_wins) {
+        message = `Yy-Kaa-Kone! Kik has the lead by winning ${kik_wins} categories.\n\n`;
+      } else {
+        message += `It seems to be even with ${sik_wins} category wins for both guilds.\n\n`;
       }
 
-      kik_stats += ` - ${s.sport}: ${s.kik_sum.toFixed(1)} km${
-        s.kik_sum > s.sik_sum ? " 🏆" : ` (-${(s.sik_sum - s.kik_sum).toFixed(1)} km)`
-      }\n`;
-      sik_stats += ` - ${s.sport}: ${s.sik_sum.toFixed(1)} km${
-        s.sik_sum > s.kik_sum ? " 🏆" : ` (-${(s.kik_sum - s.sik_sum).toFixed(1)} km)`
-      }\n`;
-    });
-
-    if (kik_wins < sik_wins) {
-      message += `JAPPADAIDA! Sik has the lead by winning ${sik_wins} categories.\n\n`;
-    } else if (kik_wins > sik_wins) {
-      message = `Yy-Kaa-Kone! Kik has the lead by winning ${kik_wins} categories.\n\n`;
-    } else {
-      message += `It seems to be even with ${sik_wins} category wins for both guilds.\n\n`;
+      ctx.reply(message + kik_stats + "\n" + sik_stats);
+    }else{
+      ctx.reply("I'm sorry, /status only works in private now")
     }
-
-    ctx.reply(message + kik_stats + "\n" + sik_stats);
   });
 
   // personal commands
