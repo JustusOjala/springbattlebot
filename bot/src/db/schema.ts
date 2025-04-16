@@ -10,7 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const guild = pgEnum("guild", ["SIK", "KIK"]);
-export const sport = pgEnum("sport", ["Running/Walking", "Biking", "Activity", "Steps"]);
+export const sport = pgEnum("sport", ["Running/Walking", "Biking", "Steps"]);
 
 export const users = pgTable("users", {
   id: bigint("id", { mode: "number" }).primaryKey(),
