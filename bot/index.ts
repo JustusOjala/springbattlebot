@@ -44,6 +44,10 @@ async function changeGuild(userId: number, guild: Guild) {
   await db.update(logs).set({ guild: guild }).where(eq(logs.userId, userId));
 }
 
+async function updateName(userId: number, name: string) {
+  await db.update(users).set({ userName:  name}).where(eq(users.id, userId));
+}
+
 async function getStats() {
   const stats = await db
     .select({
@@ -540,6 +544,22 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
           Markup.button.callback("KIK", "reset_guild KIK"),
         ])
       );
+    }
+  });
+
+  bot.command("update_name", (ctx: Context) => {
+    if (ctx.message && ctx.message.chat.type === "private") {
+      const user_id = Number(ctx.message.from.id);
+      const user_name = ctx.message.from.last_name
+          ? `${ctx.message.from.first_name} ${ctx.message.from.last_name}`
+          : ctx.message.from.first_name;
+      if(user_id && user_name){
+        updateName(user_id, user_name)
+          .then(() => ctx.reply(`Your name was successfully updated to ${user_name}.`))
+          .catch(() => ctx.reply("Something went wrong while updating your name."))
+      }else{
+        ctx.reply("Your id or name could not be determined.")
+      }
     }
   });
 
