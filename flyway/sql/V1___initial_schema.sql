@@ -1,5 +1,5 @@
 CREATE TYPE GUILD AS ENUM ('SIK', 'KIK');
-CREATE TYPE SPORT AS ENUM ('Running/Walking', 'Biking', 'Activity');
+CREATE TYPE SPORT AS ENUM ('Running/Walking', 'Biking', 'Activity', 'Steps');
 
 CREATE TABLE users (
   user_id BIGINT PRIMARY KEY,

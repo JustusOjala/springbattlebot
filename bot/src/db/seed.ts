@@ -12,7 +12,7 @@ const sportVals = sport.enumValues;
 
 const running = sportVals[0];
 const biking = sportVals[1];
-const activity = sportVals[2];
+const steps = sportVals[3];
 
 // TODO: seed like 20 users and x logs
 
@@ -88,7 +88,7 @@ const logValues = [
   {
     userId: 3,
     guild: sik,
-    sport: activity,
+    sport: steps,
     distance: 10,
   },
   {
@@ -118,7 +118,7 @@ const logValues = [
   {
     userId: 5,
     guild: kik,
-    sport: activity,
+    sport: steps,
     distance: 10,
   },
   {

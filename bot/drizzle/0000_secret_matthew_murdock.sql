@@ -5,7 +5,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "sport" AS ENUM('Running/Walking', 'Biking', 'Activity');
+ CREATE TYPE "sport" AS ENUM('Running/Walking', 'Biking', 'Activity', 'Steps');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

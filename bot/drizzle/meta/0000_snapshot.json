@@ -165,7 +165,8 @@
       "values": {
         "Running/Walking": "Running/Walking",
         "Biking": "Biking",
-        "Activity": "Activity"
+        "Activity": "Activity",
+        "Steps": "Steps"
       }
     }
   },
