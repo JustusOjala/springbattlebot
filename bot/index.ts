@@ -647,6 +647,10 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
 
   bot.on(message("photo"), async (ctx: Context) => {
     if (ctx.message && ctx.message.chat.type === "private") {
+      if(process.env.ACCEPTING_SUBMISSIONS !== "true"){
+        ctx.reply("Sorry, I am not currently accepting submissions.")
+        return;
+      }
       const user_id = Number(ctx.message.from.id);
       const user = await getUser(user_id);
 
