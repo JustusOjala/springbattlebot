@@ -19,7 +19,7 @@ import { and, sql, eq, between, desc } from "drizzle-orm";
 type Guild = "SIK" | "KIK";
 
 enum Sport {
-  activity = "Activity",
+  steps = "Steps",
   biking = "Biking",
   running_walking = "Running/Walking",
 }
@@ -280,7 +280,7 @@ async function askSport(ctx: Context) {
         Sport.running_walking,
         `sport ${Sport.running_walking}`
       ),
-      Markup.button.callback(Sport.activity, `sport ${Sport.activity}`),
+      Markup.button.callback(Sport.steps, `sport ${Sport.steps}`),
       Markup.button.callback(Sport.biking, `sport ${Sport.biking}`),
     ])
   );
@@ -601,7 +601,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
 
           const distance = z.number().min(1).parse(Number(text));
 
-          if(log_event.sport !== Sport.activity && distance > 1000){
+          if(log_event.sport !== Sport.steps && distance > 1000){
             ctx.reply(
               "You inserted a distance exceeding 1000 km. Are you sure you did not intend to record steps?",
               Markup.inlineKeyboard([
@@ -609,17 +609,17 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
                   `Record as ${log_event.sport}`,
                   `sportFix ${log_event.sport} ${distance}`
                 ),
-                Markup.button.callback(`Record as ${Sport.activity}`, `sportFix ${Sport.activity} ${distance}`),
+                Markup.button.callback(`Record as ${Sport.steps}`, `sportFix ${Sport.steps} ${distance}`),
               ])
             );
           }else{
             await insertLog(
               log_event.user_id,
               log_event.sport as Sport,
-              log_event.sport === Sport.activity ? distance * 0.0007 : distance
+              log_event.sport === Sport.steps ? distance * 0.0007 : distance
             );
 
-            ctx.reply(`Recorded ${log_event.sport} with ${distance} ${log_event.sport === Sport.activity ? "steps" : "km"}`);
+            ctx.reply(`Recorded ${log_event.sport} with ${distance} ${log_event.sport === Sport.steps ? "steps" : "km"}`);
           }
 
           await deleteLogEvent(log_event.user_id);
@@ -635,7 +635,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
 
           if (e instanceof ZodError) {
             ctx.reply(
-              log_event.sport === Sport.activity
+              log_event.sport === Sport.steps
                 ? "Something went wrong with your input. Make sure you use whole numbers for steps. Please try again."
                 : "Something went wrong with your input. Make sure you use . as separator for kilometers and meters, also the minimum distance is 1km. Please try again."
             );
@@ -707,14 +707,16 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
                 }
                 break;
               case "activity":
+              case "steps":
               case "a":
+              case "s":
                 await insertLog(
                   user_id,
-                  Sport.activity,
+                  Sport.steps,
                   distance * 0.0007
                 );
     
-                ctx.reply(`Recorded Activity with ${distance} steps`);
+                ctx.reply(`Recorded Steps with ${distance} steps`);
                 await deleteLogEvent(user_id);
                 ctx.reply("Thanks for participating!");
                 break;
@@ -781,7 +783,7 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
           }
 
           ctx.reply(
-            logData === Sport.activity
+            logData === Sport.steps
               ? "Type the number of steps that you have walked. These are converted to kilometers automatically"
               : "Type the number of kilometers using '.' as a separator, for example: 5.5"
           );
@@ -793,10 +795,10 @@ if (process.env.BOT_TOKEN && process.env.ADMINS) {
           await insertLog(
             user_id,
             sport,
-            sport === Sport.activity ? distance * 0.0007 : distance
+            sport === Sport.steps ? distance * 0.0007 : distance
           );
 
-          ctx.reply(`Recorded ${sport} with ${distance} ${sport === Sport.activity ? "steps" : "km"}`);
+          ctx.reply(`Recorded ${sport} with ${distance} ${sport === Sport.steps ? "steps" : "km"}`);
           break;
         case "daily":
           await handleDaily(ctx, Number(logData));
